@@ -55,3 +55,28 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local app settings / secrets
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+*.env
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Coverage
+coverage/
+.coverage
+.coveragexml
