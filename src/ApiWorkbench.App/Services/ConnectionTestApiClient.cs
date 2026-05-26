@@ -36,6 +36,26 @@ public sealed class ConnectionTestApiClient
             _jsonOptions,
             cancellationToken);
 
+        return await ReadConnectionTestResultAsync(response, cancellationToken);
+    }
+
+    public async Task<ConnectionTestResult> RunMockConnectionTestFromProfileAsync(
+        ConnectionProfile profile,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.PostAsJsonAsync(
+            "api/connection-tests/mock/profile",
+            profile,
+            _jsonOptions,
+            cancellationToken);
+
+        return await ReadConnectionTestResultAsync(response, cancellationToken);
+    }
+
+    private async Task<ConnectionTestResult> ReadConnectionTestResultAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync(cancellationToken);

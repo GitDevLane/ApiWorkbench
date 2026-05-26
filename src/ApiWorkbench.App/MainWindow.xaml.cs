@@ -20,7 +20,7 @@ public partial class MainWindow : Window
     private async void RunTestButton_Click(object sender, RoutedEventArgs e)
     {
         RunTestButton.IsEnabled = false;
-        StatusTextBlock.Text = "Running test...";
+        StatusTextBlock.Text = "Running profile test...";
         ResultTextBox.Text = string.Empty;
 
         try
@@ -33,18 +33,22 @@ public partial class MainWindow : Window
                 connectionType = ConnectionType.Unknown;
             }
 
-            var request = new ConnectionTestRequest
+            var profile = new ConnectionProfile
             {
-                ProfileName = ProfileNameTextBox.Text,
+                Name = ProfileNameTextBox.Text,
                 ConnectionType = connectionType,
-                Target = TargetTextBox.Text
+                Target = TargetTextBox.Text,
+                Description = "Temporary WPF profile test",
+                IsActive = true
             };
 
-            var result = await _apiClient.RunMockConnectionTestAsync(request);
+            var result = await _apiClient.RunMockConnectionTestFromProfileAsync(profile);
 
             StatusTextBlock.Text = result.IsSuccess ? "Success" : "Failed";
 
             var output = new StringBuilder();
+            output.AppendLine("Profile-Based Mock Connection Test");
+            output.AppendLine("----------------------------------");
             output.AppendLine($"Id: {result.Id}");
             output.AppendLine($"Profile Name: {result.ProfileName}");
             output.AppendLine($"Connection Type: {result.ConnectionType}");
