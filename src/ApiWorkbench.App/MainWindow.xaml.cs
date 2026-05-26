@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using ApiWorkbench.App.Configuration;
 using ApiWorkbench.App.Services;
 using ApiWorkbench.Core.Enums;
 using ApiWorkbench.Core.Models;
@@ -9,13 +10,18 @@ namespace ApiWorkbench.App;
 
 public partial class MainWindow : Window
 {
-    private readonly ConnectionTestApiClient _apiClient = new("http://localhost:5075");
+    private readonly ConnectionTestApiClient _apiClient;
 
     public MainWindow()
     {
         InitializeComponent();
+
+        var settings = AppSettingsLoader.Load();
+        _apiClient = new ConnectionTestApiClient(settings.ApiBaseUrl);
+
         ConnectionTypeComboBox.SelectedIndex = 0;
     }
+
 
     private async void RunTestButton_Click(object sender, RoutedEventArgs e)
     {
@@ -73,3 +79,4 @@ public partial class MainWindow : Window
         }
     }
 }
+
