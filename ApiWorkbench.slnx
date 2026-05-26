@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ApiWorkbench.Api/ApiWorkbench.Api.csproj" />
+    <Project Path="src/ApiWorkbench.App/ApiWorkbench.App.csproj" />
+    <Project Path="src/ApiWorkbench.Core/ApiWorkbench.Core.csproj" />
+    <Project Path="src/ApiWorkbench.Data/ApiWorkbench.Data.csproj" />
+    <Project Path="src/ApiWorkbench.Infrastructure/ApiWorkbench.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ApiWorkbench.Tests/ApiWorkbench.Tests.csproj" />
+  </Folder>
+</Solution>
