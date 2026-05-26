@@ -13,6 +13,7 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IConnectionTestService, MockConnectionTestService>();
+builder.Services.AddScoped<IConnectionProfileValidator, ConnectionProfileValidator>();
 
 var app = builder.Build();
 
@@ -29,4 +30,3 @@ if (!app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
-

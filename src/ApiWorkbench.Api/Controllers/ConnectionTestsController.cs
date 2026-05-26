@@ -9,10 +9,14 @@ namespace ApiWorkbench.Api.Controllers;
 public sealed class ConnectionTestsController : ControllerBase
 {
     private readonly IConnectionTestService _connectionTestService;
+    private readonly IConnectionProfileValidator _profileValidator;
 
-    public ConnectionTestsController(IConnectionTestService connectionTestService)
+    public ConnectionTestsController(
+        IConnectionTestService connectionTestService,
+        IConnectionProfileValidator profileValidator)
     {
         _connectionTestService = connectionTestService;
+        _profileValidator = profileValidator;
     }
 
     [HttpPost("mock")]
@@ -34,6 +38,27 @@ public sealed class ConnectionTestsController : ControllerBase
             request.ProfileName,
             request.ConnectionType,
             request.Target,
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpPost("mock/profile")]
+    public async Task<IActionResult> RunMockConnectionTestFromProfile(
+        [FromBody] ConnectionProfile profile,
+        CancellationToken cancellationToken)
+    {
+        var validationResult = _profileValidator.Validate(profile);
+
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        var result = await _connectionTestService.TestConnectionAsync(
+            profile.Name,
+            profile.ConnectionType,
+            profile.Target,
             cancellationToken);
 
         return Ok(result);
