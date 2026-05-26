@@ -1,5 +1,5 @@
-﻿using ApiWorkbench.Api.Requests;
-using ApiWorkbench.Core.Abstractions;
+﻿using ApiWorkbench.Core.Abstractions;
+using ApiWorkbench.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiWorkbench.Api.Controllers;

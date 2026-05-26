@@ -5,8 +5,72 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ApiWorkbench.App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="ApiWorkbench" Height="500" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <TextBlock Grid.Row="0"
+                   Text="ApiWorkbench - Mock Connection Test"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Profile Name"/>
+            <TextBox x:Name="ProfileNameTextBox"
+                     Text="Local Mock Test"
+                     Padding="8"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
+            <TextBlock Text="Connection Type"/>
+            <ComboBox x:Name="ConnectionTypeComboBox"
+                      Padding="8">
+                <ComboBoxItem Content="RestApi"/>
+                <ComboBoxItem Content="SqlServer"/>
+                <ComboBoxItem Content="PostgreSql"/>
+                <ComboBoxItem Content="FastApi"/>
+                <ComboBoxItem Content="AwsS3"/>
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Margin="0,0,0,10">
+            <TextBlock Text="Target"/>
+            <TextBox x:Name="TargetTextBox"
+                     Text="https://example.com"
+                     Padding="8"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,10">
+            <Button x:Name="RunTestButton"
+                    Content="Run Mock Test"
+                    Width="140"
+                    Padding="8"
+                    Click="RunTestButton_Click"/>
+
+            <TextBlock x:Name="StatusTextBlock"
+                       Text="Ready"
+                       VerticalAlignment="Center"
+                       Margin="15,0,0,0"/>
+        </StackPanel>
+
+        <TextBox x:Name="ResultTextBox"
+                 Grid.Row="5"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"
+                 FontFamily="Consolas"
+                 Padding="10"/>
     </Grid>
 </Window>

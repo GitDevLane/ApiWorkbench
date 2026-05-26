@@ -1,23 +1,71 @@
 ﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ApiWorkbench.App.Services;
+using ApiWorkbench.Core.Enums;
+using ApiWorkbench.Core.Models;
 
 namespace ApiWorkbench.App;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
+    private readonly ConnectionTestApiClient _apiClient = new("http://localhost:5075");
+
     public MainWindow()
     {
         InitializeComponent();
+        ConnectionTypeComboBox.SelectedIndex = 0;
+    }
+
+    private async void RunTestButton_Click(object sender, RoutedEventArgs e)
+    {
+        RunTestButton.IsEnabled = false;
+        StatusTextBlock.Text = "Running test...";
+        ResultTextBox.Text = string.Empty;
+
+        try
+        {
+            var selectedItem = (ComboBoxItem)ConnectionTypeComboBox.SelectedItem;
+            var connectionTypeText = selectedItem.Content?.ToString() ?? "Unknown";
+
+            if (!Enum.TryParse<ConnectionType>(connectionTypeText, out var connectionType))
+            {
+                connectionType = ConnectionType.Unknown;
+            }
+
+            var request = new ConnectionTestRequest
+            {
+                ProfileName = ProfileNameTextBox.Text,
+                ConnectionType = connectionType,
+                Target = TargetTextBox.Text
+            };
+
+            var result = await _apiClient.RunMockConnectionTestAsync(request);
+
+            StatusTextBlock.Text = result.IsSuccess ? "Success" : "Failed";
+
+            var output = new StringBuilder();
+            output.AppendLine($"Id: {result.Id}");
+            output.AppendLine($"Profile Name: {result.ProfileName}");
+            output.AppendLine($"Connection Type: {result.ConnectionType}");
+            output.AppendLine($"Status: {result.Status}");
+            output.AppendLine($"Message: {result.Message}");
+            output.AppendLine($"Error: {result.ErrorMessage}");
+            output.AppendLine($"Started At: {result.StartedAt}");
+            output.AppendLine($"Completed At: {result.CompletedAt}");
+            output.AppendLine($"Duration: {result.Duration}");
+            output.AppendLine($"Is Success: {result.IsSuccess}");
+
+            ResultTextBox.Text = output.ToString();
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "Error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            RunTestButton.IsEnabled = true;
+        }
     }
 }

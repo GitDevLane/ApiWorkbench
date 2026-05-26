@@ -1,6 +1,6 @@
 ﻿using ApiWorkbench.Core.Enums;
 
-namespace ApiWorkbench.Api.Requests;
+namespace ApiWorkbench.Core.Models;
 
 public sealed class ConnectionTestRequest
 {
