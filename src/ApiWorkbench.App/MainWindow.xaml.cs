@@ -11,6 +11,7 @@ namespace ApiWorkbench.App;
 public partial class MainWindow : Window
 {
     private readonly ConnectionTestApiClient _apiClient;
+    private bool _isLoadingProfile;
 
     public MainWindow()
     {
@@ -22,6 +23,38 @@ public partial class MainWindow : Window
         ConnectionTypeComboBox.SelectedIndex = 0;
     }
 
+    private async void LoadProfilesButton_Click(object sender, RoutedEventArgs e)
+    {
+        await LoadProfilesAsync();
+    }
+
+    private async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        SaveProfileButton.IsEnabled = false;
+        StatusTextBlock.Text = "Saving profile...";
+
+        try
+        {
+            var selectedProfile = SavedProfilesComboBox.SelectedItem as ConnectionProfile;
+            var profile = BuildProfileFromForm(selectedProfile);
+
+            var savedProfile = await _apiClient.SaveProfileAsync(profile);
+
+            StatusTextBlock.Text = "Profile saved";
+            ResultTextBox.Text = $"Saved profile: {savedProfile.Name}{Environment.NewLine}Id: {savedProfile.Id}";
+
+            await LoadProfilesAsync(savedProfile.Id);
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "Save error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            SaveProfileButton.IsEnabled = true;
+        }
+    }
 
     private async void RunTestButton_Click(object sender, RoutedEventArgs e)
     {
@@ -31,42 +64,13 @@ public partial class MainWindow : Window
 
         try
         {
-            var selectedItem = (ComboBoxItem)ConnectionTypeComboBox.SelectedItem;
-            var connectionTypeText = selectedItem.Content?.ToString() ?? "Unknown";
-
-            if (!Enum.TryParse<ConnectionType>(connectionTypeText, out var connectionType))
-            {
-                connectionType = ConnectionType.Unknown;
-            }
-
-            var profile = new ConnectionProfile
-            {
-                Name = ProfileNameTextBox.Text,
-                ConnectionType = connectionType,
-                Target = TargetTextBox.Text,
-                Description = "Temporary WPF profile test",
-                IsActive = true
-            };
+            var selectedProfile = SavedProfilesComboBox.SelectedItem as ConnectionProfile;
+            var profile = BuildProfileFromForm(selectedProfile);
 
             var result = await _apiClient.RunMockConnectionTestFromProfileAsync(profile);
 
             StatusTextBlock.Text = result.IsSuccess ? "Success" : "Failed";
-
-            var output = new StringBuilder();
-            output.AppendLine("Profile-Based Mock Connection Test");
-            output.AppendLine("----------------------------------");
-            output.AppendLine($"Id: {result.Id}");
-            output.AppendLine($"Profile Name: {result.ProfileName}");
-            output.AppendLine($"Connection Type: {result.ConnectionType}");
-            output.AppendLine($"Status: {result.Status}");
-            output.AppendLine($"Message: {result.Message}");
-            output.AppendLine($"Error: {result.ErrorMessage}");
-            output.AppendLine($"Started At: {result.StartedAt}");
-            output.AppendLine($"Completed At: {result.CompletedAt}");
-            output.AppendLine($"Duration: {result.Duration}");
-            output.AppendLine($"Is Success: {result.IsSuccess}");
-
-            ResultTextBox.Text = output.ToString();
+            ResultTextBox.Text = FormatResult(result);
         }
         catch (Exception ex)
         {
@@ -77,6 +81,121 @@ public partial class MainWindow : Window
         {
             RunTestButton.IsEnabled = true;
         }
+    }
+
+    private void SavedProfilesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isLoadingProfile)
+        {
+            return;
+        }
+
+        if (SavedProfilesComboBox.SelectedItem is not ConnectionProfile profile)
+        {
+            return;
+        }
+
+        ProfileNameTextBox.Text = profile.Name;
+        TargetTextBox.Text = profile.Target;
+        SelectConnectionType(profile.ConnectionType);
+        StatusTextBlock.Text = $"Loaded profile: {profile.Name}";
+    }
+
+    private async Task LoadProfilesAsync(Guid? selectProfileId = null)
+    {
+        LoadProfilesButton.IsEnabled = false;
+        StatusTextBlock.Text = "Loading profiles...";
+
+        try
+        {
+            var profiles = await _apiClient.GetProfilesAsync();
+
+            _isLoadingProfile = true;
+            SavedProfilesComboBox.ItemsSource = profiles;
+            _isLoadingProfile = false;
+
+            if (selectProfileId.HasValue)
+            {
+                SavedProfilesComboBox.SelectedItem = profiles.FirstOrDefault(profile => profile.Id == selectProfileId.Value);
+            }
+
+            StatusTextBlock.Text = $"Loaded {profiles.Count} profile(s)";
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "Load error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            _isLoadingProfile = false;
+            LoadProfilesButton.IsEnabled = true;
+        }
+    }
+
+    private ConnectionProfile BuildProfileFromForm(ConnectionProfile? existingProfile)
+    {
+        var connectionType = GetSelectedConnectionType();
+
+        return new ConnectionProfile
+        {
+            Id = existingProfile?.Id ?? Guid.NewGuid(),
+            Name = ProfileNameTextBox.Text,
+            ConnectionType = connectionType,
+            Target = TargetTextBox.Text,
+            Description = existingProfile?.Description ?? "Saved from WPF app",
+            IsActive = true,
+            CreatedAt = existingProfile?.CreatedAt ?? DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
+        };
+    }
+
+    private ConnectionType GetSelectedConnectionType()
+    {
+        var selectedItem = (ComboBoxItem)ConnectionTypeComboBox.SelectedItem;
+        var connectionTypeText = selectedItem.Content?.ToString() ?? "Unknown";
+
+        return Enum.TryParse<ConnectionType>(connectionTypeText, out var connectionType)
+            ? connectionType
+            : ConnectionType.Unknown;
+    }
+
+    private void SelectConnectionType(ConnectionType connectionType)
+    {
+        foreach (var item in ConnectionTypeComboBox.Items.OfType<ComboBoxItem>())
+        {
+            if (string.Equals(item.Content?.ToString(), connectionType.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                ConnectionTypeComboBox.SelectedItem = item;
+                return;
+            }
+        }
+
+        ConnectionTypeComboBox.SelectedIndex = 0;
+    }
+
+    private static string FormatResult(ConnectionTestResult result)
+    {
+        var output = new StringBuilder();
+
+        output.AppendLine("Profile-Based Mock Connection Test");
+        output.AppendLine("----------------------------------");
+        output.AppendLine($"Id: {result.Id}");
+        output.AppendLine($"Profile Name: {result.ProfileName}");
+        output.AppendLine($"Connection Type: {result.ConnectionType}");
+        output.AppendLine($"Status: {result.Status}");
+        output.AppendLine($"Message: {result.Message}");
+        var errorText = string.IsNullOrWhiteSpace(result.ErrorMessage)
+            ? "None"
+            : result.ErrorMessage;
+
+        output.AppendLine($"Error: {errorText}");
+        output.AppendLine($"Started At: {result.StartedAt}");
+        output.AppendLine($"Completed At: {result.CompletedAt}");
+        output.AppendLine($"Duration: {result.Duration}");
+        output.AppendLine($"Is Success: {result.IsSuccess}");
+
+        return output.ToString();
     }
 }
 

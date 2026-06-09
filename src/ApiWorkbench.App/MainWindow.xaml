@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ApiWorkbench.App"
         mc:Ignorable="d"
-        Title="ApiWorkbench" Height="500" Width="800"
+        Title="ApiWorkbench" Height="620" Width="900"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -18,19 +19,37 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-                   Text="ApiWorkbench - Mock Connection Test"
+                   Text="ApiWorkbench - Profile-Based Connection Test"
                    FontSize="22"
                    FontWeight="Bold"
                    Margin="0,0,0,20"/>
 
         <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Saved Profiles"/>
+            <DockPanel>
+                <ComboBox x:Name="SavedProfilesComboBox"
+                          DisplayMemberPath="Name"
+                          SelectionChanged="SavedProfilesComboBox_SelectionChanged"
+                          Padding="8"
+                          DockPanel.Dock="Left"
+                          Width="500"/>
+                <Button x:Name="LoadProfilesButton"
+                        Content="Load Profiles"
+                        Width="120"
+                        Margin="10,0,0,0"
+                        Padding="8"
+                        Click="LoadProfilesButton_Click"/>
+            </DockPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
             <TextBlock Text="Profile Name"/>
             <TextBox x:Name="ProfileNameTextBox"
                      Text="Local Mock Test"
                      Padding="8"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,10">
+        <StackPanel Grid.Row="3" Margin="0,0,0,10">
             <TextBlock Text="Connection Type"/>
             <ComboBox x:Name="ConnectionTypeComboBox"
                       Padding="8">
@@ -42,20 +61,27 @@
             </ComboBox>
         </StackPanel>
 
-        <StackPanel Grid.Row="3" Margin="0,0,0,10">
+        <StackPanel Grid.Row="4" Margin="0,0,0,10">
             <TextBlock Text="Target"/>
             <TextBox x:Name="TargetTextBox"
                      Text="https://example.com"
                      Padding="8"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="4"
+        <StackPanel Grid.Row="5"
                     Orientation="Horizontal"
                     Margin="0,0,0,10">
+            <Button x:Name="SaveProfileButton"
+                    Content="Save Profile"
+                    Width="120"
+                    Padding="8"
+                    Click="SaveProfileButton_Click"/>
+
             <Button x:Name="RunTestButton"
                     Content="Run Mock Test"
                     Width="140"
                     Padding="8"
+                    Margin="10,0,0,0"
                     Click="RunTestButton_Click"/>
 
             <TextBlock x:Name="StatusTextBlock"
@@ -65,7 +91,7 @@
         </StackPanel>
 
         <TextBox x:Name="ResultTextBox"
-                 Grid.Row="5"
+                 Grid.Row="6"
                  IsReadOnly="True"
                  TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto"
