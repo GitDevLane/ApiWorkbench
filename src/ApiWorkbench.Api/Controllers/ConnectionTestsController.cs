@@ -10,13 +10,16 @@ public sealed class ConnectionTestsController : ControllerBase
 {
     private readonly IConnectionTestService _connectionTestService;
     private readonly IConnectionProfileValidator _profileValidator;
+    private readonly IConnectionTestHistoryRepository _historyRepository;
 
     public ConnectionTestsController(
         IConnectionTestService connectionTestService,
-        IConnectionProfileValidator profileValidator)
+        IConnectionProfileValidator profileValidator,
+        IConnectionTestHistoryRepository historyRepository)
     {
         _connectionTestService = connectionTestService;
         _profileValidator = profileValidator;
+        _historyRepository = historyRepository;
     }
 
     [HttpPost("mock")]
@@ -40,6 +43,10 @@ public sealed class ConnectionTestsController : ControllerBase
             request.Target,
             cancellationToken);
 
+        await _historyRepository.SaveAsync(
+            ToHistoryItem(result, request.Target),
+            cancellationToken);
+
         return Ok(result);
     }
 
@@ -61,6 +68,27 @@ public sealed class ConnectionTestsController : ControllerBase
             profile.Target,
             cancellationToken);
 
+        await _historyRepository.SaveAsync(
+            ToHistoryItem(result, profile.Target),
+            cancellationToken);
+
         return Ok(result);
+    }
+
+    private static ConnectionTestHistoryItem ToHistoryItem(
+        ConnectionTestResult result,
+        string target)
+    {
+        return new ConnectionTestHistoryItem
+        {
+            ProfileName = result.ProfileName,
+            ConnectionType = result.ConnectionType,
+            Target = target,
+            Status = result.Status,
+            Message = result.Message,
+            ErrorMessage = result.ErrorMessage,
+            StartedAt = result.StartedAt,
+            CompletedAt = result.CompletedAt
+        };
     }
 }

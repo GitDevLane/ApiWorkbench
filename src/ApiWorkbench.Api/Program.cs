@@ -28,6 +28,18 @@ builder.Services.AddScoped<IConnectionProfileRepository>(_ =>
     return new JsonConnectionProfileRepository(filePath);
 });
 
+builder.Services.AddScoped<IConnectionTestHistoryRepository>(_ =>
+{
+    var configuredPath = builder.Configuration["HistoryStorage:FilePath"]
+        ?? "App_Data/history.json";
+
+    var filePath = Path.IsPathRooted(configuredPath)
+        ? configuredPath
+        : Path.Combine(AppContext.BaseDirectory, configuredPath);
+
+    return new JsonConnectionTestHistoryRepository(filePath);
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
