@@ -62,6 +62,22 @@ public sealed class ConnectionTestApiClient
         return savedProfile ?? throw new InvalidOperationException("API returned an empty profile response.");
     }
 
+    public async Task DeleteProfileAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.DeleteAsync(
+            $"api/profiles/{id}",
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new InvalidOperationException(
+                $"Delete profile failed with status {(int)response.StatusCode}: {error}");
+        }
+    }
     public async Task<IReadOnlyList<ConnectionTestHistoryItem>> GetHistoryAsync(
         CancellationToken cancellationToken = default)
     {
@@ -146,4 +162,5 @@ public sealed class ConnectionTestApiClient
         return result ?? throw new InvalidOperationException("API returned an empty response.");
     }
 }
+
 

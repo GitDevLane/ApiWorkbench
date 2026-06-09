@@ -56,6 +56,54 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (SavedProfilesComboBox.SelectedItem is not ConnectionProfile profile)
+        {
+            StatusTextBlock.Text = "No profile selected";
+            ResultTextBox.Text = "Select a saved profile before deleting.";
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Delete profile '{profile.Name}'?",
+            "Confirm Delete",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        DeleteProfileButton.IsEnabled = false;
+        StatusTextBlock.Text = "Deleting profile...";
+
+        try
+        {
+            await _apiClient.DeleteProfileAsync(profile.Id);
+
+            SavedProfilesComboBox.SelectedItem = null;
+            ProfileNameTextBox.Text = string.Empty;
+            TargetTextBox.Text = string.Empty;
+            ConnectionTypeComboBox.SelectedIndex = 0;
+
+            ResultTextBox.Text = $"Deleted profile: {profile.Name}";
+            StatusTextBlock.Text = "Profile deleted";
+
+            await LoadProfilesAsync();
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "Delete profile error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            DeleteProfileButton.IsEnabled = true;
+        }
+    }
+
     private async void RunTestButton_Click(object sender, RoutedEventArgs e)
     {
         RunTestButton.IsEnabled = false;
@@ -70,11 +118,7 @@ public partial class MainWindow : Window
             var result = await _apiClient.RunMockConnectionTestFromProfileAsync(profile);
 
             StatusTextBlock.Text = result.IsSuccess ? "Success" : "Failed";
-            ResultTextBox.Text = FormatResult(
-                result,
-                result.Message.StartsWith("HTTP GET", StringComparison.OrdinalIgnoreCase)
-                    ? "Real REST GET Connection Test"
-                    : "Profile-Based Mock Connection Test");
+            ResultTextBox.Text = FormatResult(result, "Profile-Based Mock Connection Test");
 
             await LoadHistoryAsync();
         }
@@ -103,11 +147,7 @@ public partial class MainWindow : Window
             var result = await _apiClient.RunRestApiGetTestFromProfileAsync(profile);
 
             StatusTextBlock.Text = result.IsSuccess ? "REST GET Success" : "REST GET Failed";
-            ResultTextBox.Text = FormatResult(
-                result,
-                result.Message.StartsWith("HTTP GET", StringComparison.OrdinalIgnoreCase)
-                    ? "Real REST GET Connection Test"
-                    : "Profile-Based Mock Connection Test");
+            ResultTextBox.Text = FormatResult(result, "Real REST GET Connection Test");
 
             await LoadHistoryAsync();
         }
@@ -121,6 +161,7 @@ public partial class MainWindow : Window
             RunRestGetButton.IsEnabled = true;
         }
     }
+
     private async void LoadHistoryButton_Click(object sender, RoutedEventArgs e)
     {
         await LoadHistoryAsync();
@@ -128,6 +169,17 @@ public partial class MainWindow : Window
 
     private async void ClearHistoryButton_Click(object sender, RoutedEventArgs e)
     {
+        var confirm = MessageBox.Show(
+            "Clear all connection test history?",
+            "Confirm Clear History",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
         ClearHistoryButton.IsEnabled = false;
         StatusTextBlock.Text = "Clearing history...";
 
@@ -284,7 +336,7 @@ public partial class MainWindow : Window
         var output = new StringBuilder();
 
         output.AppendLine(title);
-        output.AppendLine("----------------------------------");
+        output.AppendLine(new string('-', title.Length));
         output.AppendLine($"Id: {result.Id}");
         output.AppendLine($"Profile Name: {result.ProfileName}");
         output.AppendLine($"Connection Type: {result.ConnectionType}");
@@ -324,5 +376,3 @@ public partial class MainWindow : Window
         return output.ToString();
     }
 }
-
-

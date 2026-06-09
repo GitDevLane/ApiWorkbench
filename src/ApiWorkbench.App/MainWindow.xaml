@@ -88,6 +88,13 @@
                             Padding="8"
                             Click="SaveProfileButton_Click"/>
 
+                    <Button x:Name="DeleteProfileButton"
+                            Content="Delete Profile"
+                            Width="120"
+                            Padding="8"
+                            Margin="10,0,0,0"
+                            Click="DeleteProfileButton_Click"/>
+
                     <Button x:Name="RunTestButton"
                             Content="Run Mock Test"
                             Width="140"
@@ -102,20 +109,6 @@
                             Margin="10,0,0,0"
                             Click="RunRestGetButton_Click"/>
 
-                    <Button x:Name="LoadHistoryButton"
-                            Content="Load History"
-                            Width="120"
-                            Padding="8"
-                            Margin="10,0,0,0"
-                            Click="LoadHistoryButton_Click"/>
-
-                    <Button x:Name="ClearHistoryButton"
-                            Content="Clear History"
-                            Width="120"
-                            Padding="8"
-                            Margin="10,0,0,0"
-                            Click="ClearHistoryButton_Click"/>
-
                     <TextBlock x:Name="StatusTextBlock"
                                Text="Ready"
                                VerticalAlignment="Center"
@@ -124,11 +117,30 @@
             </Grid>
         </Border>
 
-        <TextBlock Grid.Row="2"
-                   Text="History"
-                   FontSize="16"
-                   FontWeight="Bold"
-                   Margin="0,0,0,8"/>
+        <DockPanel Grid.Row="2"
+                   Margin="0,0,0,8">
+            <TextBlock Text="History"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       DockPanel.Dock="Left"/>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button x:Name="LoadHistoryButton"
+                        Content="Load History"
+                        Width="120"
+                        Padding="8"
+                        Margin="0,0,10,0"
+                        Click="LoadHistoryButton_Click"/>
+
+                <Button x:Name="ClearHistoryButton"
+                        Content="Clear History"
+                        Width="120"
+                        Padding="8"
+                        Click="ClearHistoryButton_Click"/>
+            </StackPanel>
+        </DockPanel>
 
         <DataGrid x:Name="HistoryDataGrid"
                   Grid.Row="3"
@@ -169,4 +181,3 @@
                  Padding="10"/>
     </Grid>
 </Window>
-
