@@ -62,6 +62,33 @@ public sealed class ConnectionTestApiClient
         return savedProfile ?? throw new InvalidOperationException("API returned an empty profile response.");
     }
 
+    public async Task<IReadOnlyList<ConnectionTestHistoryItem>> GetHistoryAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var history = await _httpClient.GetFromJsonAsync<List<ConnectionTestHistoryItem>>(
+            "api/history",
+            _jsonOptions,
+            cancellationToken);
+
+        return history ?? new List<ConnectionTestHistoryItem>();
+    }
+
+    public async Task ClearHistoryAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.DeleteAsync(
+            "api/history",
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new InvalidOperationException(
+                $"Clear history failed with status {(int)response.StatusCode}: {error}");
+        }
+    }
+
     public async Task<ConnectionTestResult> RunMockConnectionTestAsync(
         ConnectionTestRequest request,
         CancellationToken cancellationToken = default)

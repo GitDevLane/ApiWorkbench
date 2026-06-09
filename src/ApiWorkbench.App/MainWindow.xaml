@@ -5,17 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ApiWorkbench.App"
         mc:Ignorable="d"
-        Title="ApiWorkbench" Height="620" Width="900"
+        Title="ApiWorkbench" Height="760" Width="1050"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="220"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
@@ -24,74 +22,138 @@
                    FontWeight="Bold"
                    Margin="0,0,0,20"/>
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,10">
-            <TextBlock Text="Saved Profiles"/>
-            <DockPanel>
-                <ComboBox x:Name="SavedProfilesComboBox"
-                          DisplayMemberPath="Name"
-                          SelectionChanged="SavedProfilesComboBox_SelectionChanged"
-                          Padding="8"
-                          DockPanel.Dock="Left"
-                          Width="500"/>
-                <Button x:Name="LoadProfilesButton"
-                        Content="Load Profiles"
-                        Width="120"
-                        Margin="10,0,0,0"
-                        Padding="8"
-                        Click="LoadProfilesButton_Click"/>
-            </DockPanel>
-        </StackPanel>
+        <Border Grid.Row="1"
+                BorderBrush="#CCCCCC"
+                BorderThickness="1"
+                Padding="12"
+                Margin="0,0,0,12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,10">
-            <TextBlock Text="Profile Name"/>
-            <TextBox x:Name="ProfileNameTextBox"
-                     Text="Local Mock Test"
-                     Padding="8"/>
-        </StackPanel>
+                <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                    <TextBlock Text="Saved Profiles"/>
+                    <DockPanel>
+                        <ComboBox x:Name="SavedProfilesComboBox"
+                                  DisplayMemberPath="Name"
+                                  SelectionChanged="SavedProfilesComboBox_SelectionChanged"
+                                  Padding="8"
+                                  DockPanel.Dock="Left"
+                                  Width="500"/>
+                        <Button x:Name="LoadProfilesButton"
+                                Content="Load Profiles"
+                                Width="120"
+                                Margin="10,0,0,0"
+                                Padding="8"
+                                Click="LoadProfilesButton_Click"/>
+                    </DockPanel>
+                </StackPanel>
 
-        <StackPanel Grid.Row="3" Margin="0,0,0,10">
-            <TextBlock Text="Connection Type"/>
-            <ComboBox x:Name="ConnectionTypeComboBox"
-                      Padding="8">
-                <ComboBoxItem Content="RestApi"/>
-                <ComboBoxItem Content="SqlServer"/>
-                <ComboBoxItem Content="PostgreSql"/>
-                <ComboBoxItem Content="FastApi"/>
-                <ComboBoxItem Content="AwsS3"/>
-            </ComboBox>
-        </StackPanel>
+                <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                    <TextBlock Text="Profile Name"/>
+                    <TextBox x:Name="ProfileNameTextBox"
+                             Text="Local Mock Test"
+                             Padding="8"/>
+                </StackPanel>
 
-        <StackPanel Grid.Row="4" Margin="0,0,0,10">
-            <TextBlock Text="Target"/>
-            <TextBox x:Name="TargetTextBox"
-                     Text="https://example.com"
-                     Padding="8"/>
-        </StackPanel>
+                <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                    <TextBlock Text="Connection Type"/>
+                    <ComboBox x:Name="ConnectionTypeComboBox"
+                              Padding="8">
+                        <ComboBoxItem Content="RestApi"/>
+                        <ComboBoxItem Content="SqlServer"/>
+                        <ComboBoxItem Content="PostgreSql"/>
+                        <ComboBoxItem Content="FastApi"/>
+                        <ComboBoxItem Content="AwsS3"/>
+                    </ComboBox>
+                </StackPanel>
 
-        <StackPanel Grid.Row="5"
-                    Orientation="Horizontal"
-                    Margin="0,0,0,10">
-            <Button x:Name="SaveProfileButton"
-                    Content="Save Profile"
-                    Width="120"
-                    Padding="8"
-                    Click="SaveProfileButton_Click"/>
+                <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                    <TextBlock Text="Target"/>
+                    <TextBox x:Name="TargetTextBox"
+                             Text="https://example.com"
+                             Padding="8"/>
+                </StackPanel>
 
-            <Button x:Name="RunTestButton"
-                    Content="Run Mock Test"
-                    Width="140"
-                    Padding="8"
-                    Margin="10,0,0,0"
-                    Click="RunTestButton_Click"/>
+                <StackPanel Grid.Row="4"
+                            Orientation="Horizontal">
+                    <Button x:Name="SaveProfileButton"
+                            Content="Save Profile"
+                            Width="120"
+                            Padding="8"
+                            Click="SaveProfileButton_Click"/>
 
-            <TextBlock x:Name="StatusTextBlock"
-                       Text="Ready"
-                       VerticalAlignment="Center"
-                       Margin="15,0,0,0"/>
-        </StackPanel>
+                    <Button x:Name="RunTestButton"
+                            Content="Run Mock Test"
+                            Width="140"
+                            Padding="8"
+                            Margin="10,0,0,0"
+                            Click="RunTestButton_Click"/>
+
+                    <Button x:Name="LoadHistoryButton"
+                            Content="Load History"
+                            Width="120"
+                            Padding="8"
+                            Margin="10,0,0,0"
+                            Click="LoadHistoryButton_Click"/>
+
+                    <Button x:Name="ClearHistoryButton"
+                            Content="Clear History"
+                            Width="120"
+                            Padding="8"
+                            Margin="10,0,0,0"
+                            Click="ClearHistoryButton_Click"/>
+
+                    <TextBlock x:Name="StatusTextBlock"
+                               Text="Ready"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TextBlock Grid.Row="2"
+                   Text="History"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Margin="0,0,0,8"/>
+
+        <DataGrid x:Name="HistoryDataGrid"
+                  Grid.Row="3"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectionChanged="HistoryDataGrid_SelectionChanged"
+                  Margin="0,0,0,12">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Started"
+                                    Binding="{Binding StartedAt}"
+                                    Width="190"/>
+                <DataGridTextColumn Header="Profile"
+                                    Binding="{Binding ProfileName}"
+                                    Width="180"/>
+                <DataGridTextColumn Header="Type"
+                                    Binding="{Binding ConnectionType}"
+                                    Width="110"/>
+                <DataGridTextColumn Header="Status"
+                                    Binding="{Binding Status}"
+                                    Width="90"/>
+                <DataGridTextColumn Header="Duration"
+                                    Binding="{Binding Duration}"
+                                    Width="130"/>
+                <DataGridTextColumn Header="Target"
+                                    Binding="{Binding Target}"
+                                    Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <TextBox x:Name="ResultTextBox"
-                 Grid.Row="6"
+                 Grid.Row="4"
                  IsReadOnly="True"
                  TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto"

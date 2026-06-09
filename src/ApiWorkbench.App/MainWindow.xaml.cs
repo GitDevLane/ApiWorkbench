@@ -71,6 +71,8 @@ public partial class MainWindow : Window
 
             StatusTextBlock.Text = result.IsSuccess ? "Success" : "Failed";
             ResultTextBox.Text = FormatResult(result);
+
+            await LoadHistoryAsync();
         }
         catch (Exception ex)
         {
@@ -80,6 +82,35 @@ public partial class MainWindow : Window
         finally
         {
             RunTestButton.IsEnabled = true;
+        }
+    }
+
+    private async void LoadHistoryButton_Click(object sender, RoutedEventArgs e)
+    {
+        await LoadHistoryAsync();
+    }
+
+    private async void ClearHistoryButton_Click(object sender, RoutedEventArgs e)
+    {
+        ClearHistoryButton.IsEnabled = false;
+        StatusTextBlock.Text = "Clearing history...";
+
+        try
+        {
+            await _apiClient.ClearHistoryAsync();
+
+            HistoryDataGrid.ItemsSource = Array.Empty<ConnectionTestHistoryItem>();
+            ResultTextBox.Text = "History cleared.";
+            StatusTextBlock.Text = "History cleared";
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "Clear history error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            ClearHistoryButton.IsEnabled = true;
         }
     }
 
@@ -99,6 +130,17 @@ public partial class MainWindow : Window
         TargetTextBox.Text = profile.Target;
         SelectConnectionType(profile.ConnectionType);
         StatusTextBlock.Text = $"Loaded profile: {profile.Name}";
+    }
+
+    private void HistoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (HistoryDataGrid.SelectedItem is not ConnectionTestHistoryItem item)
+        {
+            return;
+        }
+
+        ResultTextBox.Text = FormatHistoryItem(item);
+        StatusTextBlock.Text = $"Selected history item: {item.ProfileName}";
     }
 
     private async Task LoadProfilesAsync(Guid? selectProfileId = null)
@@ -130,6 +172,29 @@ public partial class MainWindow : Window
         {
             _isLoadingProfile = false;
             LoadProfilesButton.IsEnabled = true;
+        }
+    }
+
+    private async Task LoadHistoryAsync()
+    {
+        LoadHistoryButton.IsEnabled = false;
+        StatusTextBlock.Text = "Loading history...";
+
+        try
+        {
+            var history = await _apiClient.GetHistoryAsync();
+
+            HistoryDataGrid.ItemsSource = history;
+            StatusTextBlock.Text = $"Loaded {history.Count} history item(s)";
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "Load history error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            LoadHistoryButton.IsEnabled = true;
         }
     }
 
@@ -176,6 +241,10 @@ public partial class MainWindow : Window
 
     private static string FormatResult(ConnectionTestResult result)
     {
+        var errorText = string.IsNullOrWhiteSpace(result.ErrorMessage)
+            ? "None"
+            : result.ErrorMessage;
+
         var output = new StringBuilder();
 
         output.AppendLine("Profile-Based Mock Connection Test");
@@ -185,10 +254,6 @@ public partial class MainWindow : Window
         output.AppendLine($"Connection Type: {result.ConnectionType}");
         output.AppendLine($"Status: {result.Status}");
         output.AppendLine($"Message: {result.Message}");
-        var errorText = string.IsNullOrWhiteSpace(result.ErrorMessage)
-            ? "None"
-            : result.ErrorMessage;
-
         output.AppendLine($"Error: {errorText}");
         output.AppendLine($"Started At: {result.StartedAt}");
         output.AppendLine($"Completed At: {result.CompletedAt}");
@@ -197,5 +262,29 @@ public partial class MainWindow : Window
 
         return output.ToString();
     }
-}
 
+    private static string FormatHistoryItem(ConnectionTestHistoryItem item)
+    {
+        var errorText = string.IsNullOrWhiteSpace(item.ErrorMessage)
+            ? "None"
+            : item.ErrorMessage;
+
+        var output = new StringBuilder();
+
+        output.AppendLine("Connection Test History Item");
+        output.AppendLine("----------------------------");
+        output.AppendLine($"Id: {item.Id}");
+        output.AppendLine($"Profile Name: {item.ProfileName}");
+        output.AppendLine($"Connection Type: {item.ConnectionType}");
+        output.AppendLine($"Target: {item.Target}");
+        output.AppendLine($"Status: {item.Status}");
+        output.AppendLine($"Message: {item.Message}");
+        output.AppendLine($"Error: {errorText}");
+        output.AppendLine($"Started At: {item.StartedAt}");
+        output.AppendLine($"Completed At: {item.CompletedAt}");
+        output.AppendLine($"Duration: {item.Duration}");
+        output.AppendLine($"Is Success: {item.IsSuccess}");
+
+        return output.ToString();
+    }
+}
