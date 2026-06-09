@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ApiWorkbench.Core\ApiWorkbench.Core.csproj" />
     <ProjectReference Include="..\..\src\ApiWorkbench.Infrastructure\ApiWorkbench.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\ApiWorkbench.Data\ApiWorkbench.Data.csproj" />
   </ItemGroup>
 
 </Project>

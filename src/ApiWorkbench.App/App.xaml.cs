@@ -3,7 +3,6 @@ using System.Data;
 using System.Windows;
 
 namespace ApiWorkbench.App;
-
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
