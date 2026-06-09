@@ -333,6 +333,22 @@ public partial class MainWindow : Window
             ? "None"
             : result.ErrorMessage;
 
+        var httpStatusText = result.HttpStatusCode.HasValue
+            ? result.HttpStatusCode.Value.ToString()
+            : "None";
+
+        var reasonText = string.IsNullOrWhiteSpace(result.ReasonPhrase)
+            ? "None"
+            : result.ReasonPhrase;
+
+        var contentTypeText = string.IsNullOrWhiteSpace(result.ResponseContentType)
+            ? "None"
+            : result.ResponseContentType;
+
+        var responsePreviewText = string.IsNullOrWhiteSpace(result.ResponseBodyPreview)
+            ? "None"
+            : result.ResponseBodyPreview;
+
         var output = new StringBuilder();
 
         output.AppendLine(title);
@@ -342,7 +358,12 @@ public partial class MainWindow : Window
         output.AppendLine($"Connection Type: {result.ConnectionType}");
         output.AppendLine($"Status: {result.Status}");
         output.AppendLine($"Message: {result.Message}");
+        output.AppendLine($"HTTP Status Code: {httpStatusText}");
+        output.AppendLine($"Reason: {reasonText}");
+        output.AppendLine($"Content Type: {contentTypeText}");
         output.AppendLine($"Error: {errorText}");
+        output.AppendLine("Response Body Preview:");
+        output.AppendLine(responsePreviewText);
         output.AppendLine($"Started At: {result.StartedAt}");
         output.AppendLine($"Completed At: {result.CompletedAt}");
         output.AppendLine($"Duration: {result.Duration}");
@@ -357,6 +378,22 @@ public partial class MainWindow : Window
             ? "None"
             : item.ErrorMessage;
 
+        var httpStatusText = item.HttpStatusCode.HasValue
+            ? item.HttpStatusCode.Value.ToString()
+            : "None";
+
+        var reasonText = string.IsNullOrWhiteSpace(item.ReasonPhrase)
+            ? "None"
+            : item.ReasonPhrase;
+
+        var contentTypeText = string.IsNullOrWhiteSpace(item.ResponseContentType)
+            ? "None"
+            : item.ResponseContentType;
+
+        var responsePreviewText = string.IsNullOrWhiteSpace(item.ResponseBodyPreview)
+            ? "None"
+            : item.ResponseBodyPreview;
+
         var output = new StringBuilder();
 
         output.AppendLine("Connection Test History Item");
@@ -367,7 +404,12 @@ public partial class MainWindow : Window
         output.AppendLine($"Target: {item.Target}");
         output.AppendLine($"Status: {item.Status}");
         output.AppendLine($"Message: {item.Message}");
+        output.AppendLine($"HTTP Status Code: {httpStatusText}");
+        output.AppendLine($"Reason: {reasonText}");
+        output.AppendLine($"Content Type: {contentTypeText}");
         output.AppendLine($"Error: {errorText}");
+        output.AppendLine("Response Body Preview:");
+        output.AppendLine(responsePreviewText);
         output.AppendLine($"Started At: {item.StartedAt}");
         output.AppendLine($"Completed At: {item.CompletedAt}");
         output.AppendLine($"Duration: {item.Duration}");
@@ -376,3 +418,4 @@ public partial class MainWindow : Window
         return output.ToString();
     }
 }
+

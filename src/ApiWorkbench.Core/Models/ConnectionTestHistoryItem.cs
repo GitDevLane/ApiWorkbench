@@ -18,6 +18,14 @@ public sealed class ConnectionTestHistoryItem
 
     public string? ErrorMessage { get; init; }
 
+    public int? HttpStatusCode { get; init; }
+
+    public string? ReasonPhrase { get; init; }
+
+    public string? ResponseContentType { get; init; }
+
+    public string? ResponseBodyPreview { get; init; }
+
     public DateTimeOffset StartedAt { get; init; } = DateTimeOffset.UtcNow;
 
     public DateTimeOffset CompletedAt { get; init; } = DateTimeOffset.UtcNow;

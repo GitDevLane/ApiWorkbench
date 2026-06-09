@@ -6,6 +6,8 @@ namespace ApiWorkbench.Infrastructure.Services;
 
 public sealed class RestApiConnectionTestService : IRestApiConnectionTestService
 {
+    private const int MaxResponsePreviewChars = 4000;
+
     private readonly HttpClient _httpClient;
 
     public RestApiConnectionTestService(HttpClient httpClient)
@@ -30,6 +32,10 @@ public sealed class RestApiConnectionTestService : IRestApiConnectionTestService
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken);
 
+            var bodyPreview = await ReadBodyPreviewAsync(
+                response.Content,
+                cancellationToken);
+
             var completedAt = DateTimeOffset.UtcNow;
             var isSuccess = response.IsSuccessStatusCode;
 
@@ -42,6 +48,10 @@ public sealed class RestApiConnectionTestService : IRestApiConnectionTestService
                 ErrorMessage = isSuccess
                     ? null
                     : $"HTTP request returned non-success status code {(int)response.StatusCode}.",
+                HttpStatusCode = (int)response.StatusCode,
+                ReasonPhrase = response.ReasonPhrase,
+                ResponseContentType = response.Content.Headers.ContentType?.ToString(),
+                ResponseBodyPreview = bodyPreview,
                 StartedAt = startedAt,
                 CompletedAt = completedAt
             };
@@ -76,5 +86,26 @@ public sealed class RestApiConnectionTestService : IRestApiConnectionTestService
                 CompletedAt = completedAt
             };
         }
+    }
+
+    private static async Task<string?> ReadBodyPreviewAsync(
+        HttpContent content,
+        CancellationToken cancellationToken)
+    {
+        var body = await content.ReadAsStringAsync(cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return null;
+        }
+
+        if (body.Length <= MaxResponsePreviewChars)
+        {
+            return body;
+        }
+
+        return body[..MaxResponsePreviewChars]
+            + Environment.NewLine
+            + "... [response preview truncated]";
     }
 }

@@ -10,7 +10,12 @@ public sealed class RestApiConnectionTestServiceTests
     [Fact]
     public async Task RunGetAsync_WithSuccessfulResponse_ReturnsSuccess()
     {
-        var httpClient = CreateHttpClient(HttpStatusCode.OK, "OK");
+        var httpClient = CreateHttpClient(
+            HttpStatusCode.OK,
+            "OK",
+            """{"message":"hello from test"}""",
+            "application/json");
+
         var service = new RestApiConnectionTestService(httpClient);
 
         var profile = new ConnectionProfile
@@ -26,6 +31,10 @@ public sealed class RestApiConnectionTestServiceTests
         Assert.Equal(ConnectionTestStatus.Success, result.Status);
         Assert.Equal(ConnectionType.RestApi, result.ConnectionType);
         Assert.Equal("Example API", result.ProfileName);
+        Assert.Equal(200, result.HttpStatusCode);
+        Assert.Equal("OK", result.ReasonPhrase);
+        Assert.Contains("application/json", result.ResponseContentType);
+        Assert.Contains("hello from test", result.ResponseBodyPreview);
         Assert.Contains("200", result.Message);
         Assert.Null(result.ErrorMessage);
     }
@@ -33,7 +42,12 @@ public sealed class RestApiConnectionTestServiceTests
     [Fact]
     public async Task RunGetAsync_WithFailureResponse_ReturnsFailed()
     {
-        var httpClient = CreateHttpClient(HttpStatusCode.NotFound, "Not Found");
+        var httpClient = CreateHttpClient(
+            HttpStatusCode.NotFound,
+            "Not Found",
+            "Not found",
+            "text/plain");
+
         var service = new RestApiConnectionTestService(httpClient);
 
         var profile = new ConnectionProfile
@@ -47,13 +61,25 @@ public sealed class RestApiConnectionTestServiceTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal(ConnectionTestStatus.Failed, result.Status);
+        Assert.Equal(404, result.HttpStatusCode);
+        Assert.Equal("Not Found", result.ReasonPhrase);
+        Assert.Contains("text/plain", result.ResponseContentType);
+        Assert.Contains("Not found", result.ResponseBodyPreview);
         Assert.Contains("404", result.Message);
         Assert.NotNull(result.ErrorMessage);
     }
 
-    private static HttpClient CreateHttpClient(HttpStatusCode statusCode, string reasonPhrase)
+    private static HttpClient CreateHttpClient(
+        HttpStatusCode statusCode,
+        string reasonPhrase,
+        string content,
+        string contentType)
     {
-        var handler = new FakeHttpMessageHandler(statusCode, reasonPhrase);
+        var handler = new FakeHttpMessageHandler(
+            statusCode,
+            reasonPhrase,
+            content,
+            contentType);
 
         return new HttpClient(handler);
     }
@@ -62,11 +88,19 @@ public sealed class RestApiConnectionTestServiceTests
     {
         private readonly HttpStatusCode _statusCode;
         private readonly string _reasonPhrase;
+        private readonly string _content;
+        private readonly string _contentType;
 
-        public FakeHttpMessageHandler(HttpStatusCode statusCode, string reasonPhrase)
+        public FakeHttpMessageHandler(
+            HttpStatusCode statusCode,
+            string reasonPhrase,
+            string content,
+            string contentType)
         {
             _statusCode = statusCode;
             _reasonPhrase = reasonPhrase;
+            _content = content;
+            _contentType = contentType;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(
@@ -76,8 +110,11 @@ public sealed class RestApiConnectionTestServiceTests
             var response = new HttpResponseMessage(_statusCode)
             {
                 ReasonPhrase = _reasonPhrase,
-                Content = new StringContent(string.Empty)
+                Content = new StringContent(_content)
             };
+
+            response.Content.Headers.ContentType =
+                new System.Net.Http.Headers.MediaTypeHeaderValue(_contentType);
 
             return Task.FromResult(response);
         }

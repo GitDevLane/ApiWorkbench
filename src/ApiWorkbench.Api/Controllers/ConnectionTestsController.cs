@@ -119,8 +119,13 @@ public sealed class ConnectionTestsController : ControllerBase
             Status = result.Status,
             Message = result.Message,
             ErrorMessage = result.ErrorMessage,
+            HttpStatusCode = result.HttpStatusCode,
+            ReasonPhrase = result.ReasonPhrase,
+            ResponseContentType = result.ResponseContentType,
+            ResponseBodyPreview = result.ResponseBodyPreview,
             StartedAt = result.StartedAt,
             CompletedAt = result.CompletedAt
         };
     }
 }
+
