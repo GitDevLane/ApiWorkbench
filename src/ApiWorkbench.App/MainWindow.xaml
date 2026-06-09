@@ -95,6 +95,13 @@
                             Margin="10,0,0,0"
                             Click="RunTestButton_Click"/>
 
+                    <Button x:Name="RunRestGetButton"
+                            Content="Run REST GET"
+                            Width="140"
+                            Padding="8"
+                            Margin="10,0,0,0"
+                            Click="RunRestGetButton_Click"/>
+
                     <Button x:Name="LoadHistoryButton"
                             Content="Load History"
                             Width="120"
@@ -162,3 +169,4 @@
                  Padding="10"/>
     </Grid>
 </Window>
+

@@ -115,6 +115,18 @@ public sealed class ConnectionTestApiClient
         return await ReadConnectionTestResultAsync(response, cancellationToken);
     }
 
+    public async Task<ConnectionTestResult> RunRestApiGetTestFromProfileAsync(
+        ConnectionProfile profile,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.PostAsJsonAsync(
+            "api/connection-tests/rest/get/profile",
+            profile,
+            _jsonOptions,
+            cancellationToken);
+
+        return await ReadConnectionTestResultAsync(response, cancellationToken);
+    }
     private async Task<ConnectionTestResult> ReadConnectionTestResultAsync(
         HttpResponseMessage response,
         CancellationToken cancellationToken)
@@ -134,3 +146,4 @@ public sealed class ConnectionTestApiClient
         return result ?? throw new InvalidOperationException("API returned an empty response.");
     }
 }
+

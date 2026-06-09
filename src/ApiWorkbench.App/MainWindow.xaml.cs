@@ -70,7 +70,11 @@ public partial class MainWindow : Window
             var result = await _apiClient.RunMockConnectionTestFromProfileAsync(profile);
 
             StatusTextBlock.Text = result.IsSuccess ? "Success" : "Failed";
-            ResultTextBox.Text = FormatResult(result);
+            ResultTextBox.Text = FormatResult(
+                result,
+                result.Message.StartsWith("HTTP GET", StringComparison.OrdinalIgnoreCase)
+                    ? "Real REST GET Connection Test"
+                    : "Profile-Based Mock Connection Test");
 
             await LoadHistoryAsync();
         }
@@ -85,6 +89,38 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void RunRestGetButton_Click(object sender, RoutedEventArgs e)
+    {
+        RunRestGetButton.IsEnabled = false;
+        StatusTextBlock.Text = "Running REST GET test...";
+        ResultTextBox.Text = string.Empty;
+
+        try
+        {
+            var selectedProfile = SavedProfilesComboBox.SelectedItem as ConnectionProfile;
+            var profile = BuildProfileFromForm(selectedProfile);
+
+            var result = await _apiClient.RunRestApiGetTestFromProfileAsync(profile);
+
+            StatusTextBlock.Text = result.IsSuccess ? "REST GET Success" : "REST GET Failed";
+            ResultTextBox.Text = FormatResult(
+                result,
+                result.Message.StartsWith("HTTP GET", StringComparison.OrdinalIgnoreCase)
+                    ? "Real REST GET Connection Test"
+                    : "Profile-Based Mock Connection Test");
+
+            await LoadHistoryAsync();
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = "REST GET error";
+            ResultTextBox.Text = ex.Message;
+        }
+        finally
+        {
+            RunRestGetButton.IsEnabled = true;
+        }
+    }
     private async void LoadHistoryButton_Click(object sender, RoutedEventArgs e)
     {
         await LoadHistoryAsync();
@@ -239,7 +275,7 @@ public partial class MainWindow : Window
         ConnectionTypeComboBox.SelectedIndex = 0;
     }
 
-    private static string FormatResult(ConnectionTestResult result)
+    private static string FormatResult(ConnectionTestResult result, string title)
     {
         var errorText = string.IsNullOrWhiteSpace(result.ErrorMessage)
             ? "None"
@@ -247,7 +283,7 @@ public partial class MainWindow : Window
 
         var output = new StringBuilder();
 
-        output.AppendLine("Profile-Based Mock Connection Test");
+        output.AppendLine(title);
         output.AppendLine("----------------------------------");
         output.AppendLine($"Id: {result.Id}");
         output.AppendLine($"Profile Name: {result.ProfileName}");
@@ -288,3 +324,5 @@ public partial class MainWindow : Window
         return output.ToString();
     }
 }
+
+
