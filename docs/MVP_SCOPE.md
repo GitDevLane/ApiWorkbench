@@ -1,8 +1,8 @@
 ﻿# MVP Scope
 
-The first MVP should stay focused and practical.
+The first ApiWorkbench MVP is focused on a practical, portfolio-ready C#/.NET workbench.
 
-The goal is not to build a full Postman clone or a full database administration tool. The goal is to build a clean, portfolio-ready workbench that proves API, database, and integration testing skills.
+The goal is not to build a full Postman clone or a full database administration tool. The goal is to demonstrate a clean frontend/backend architecture with reusable connection profiles, real REST API testing, and result history.
 
 ## MVP Goal
 
@@ -10,79 +10,75 @@ Build a C#/.NET workbench that can:
 
 - Start from a WPF desktop app
 - Call an ASP.NET Core Web API
-- Test a connection through a service layer
-- Return a structured result
-- Display the result to the user
-- Log or save test results later
+- Save and load connection profiles
+- Validate connection profiles
+- Run mock connection tests
+- Run real REST API GET tests
+- Save test results to history
+- Display results and history in the WPF app
 
-## Phase 1A - Buildable Baseline
-
-Completed:
-
-- Created GitHub repo structure
-- Created .NET solution
-- Added WPF app project
-- Added ASP.NET Core Web API project
-- Added Core class library
-- Added Infrastructure class library
-- Added Data class library
-- Added xUnit test project
-- Connected project references
-- Confirmed solution builds successfully
-
-## Phase 1B - Shared Core Models
+## Completed MVP Features
 
 Completed:
 
-- Added `ConnectionType`
-- Added `ConnectionTestStatus`
-- Added `ConnectionTestResult`
-- Added `ConnectionTestRequest`
-- Added `IConnectionTestService`
+- GitHub repo structure
+- Buildable .NET solution
+- WPF app project
+- ASP.NET Core Web API project
+- Core class library
+- Infrastructure class library
+- Data class library
+- xUnit test project
+- Shared connection test models
+- Shared connection profile models
+- Profile validation
+- Mock connection test service
+- Profile-based mock API endpoint
+- WPF-to-API mock test flow
+- WPF appsettings configuration
+- JSON profile storage
+- Profile API endpoints
+- WPF save/load/delete profile workflow
+- JSON history storage
+- History API endpoints
+- Automatic history saving after tests
+- WPF history viewer
+- WPF clear history workflow
+- Real REST API GET test service
+- REST GET API endpoint
+- WPF REST GET workflow
+- Sample REST API profile
+- MVP documentation
 
-## Phase 1C - Mock Service
+## MVP Finish Criteria
 
-Completed:
+The MVP is considered complete when:
 
-- Added `MockConnectionTestService`
-- Added test coverage for mock service
-- Confirmed tests pass
+- dotnet test succeeds
+- dotnet build succeeds
+- API starts on http://localhost:5075
+- WPF app starts
+- A RestApi profile can be saved
+- A saved profile can be loaded
+- A saved profile can be deleted
+- A real REST GET test can be run against https://example.com
+- The result shows Success and Error: None
+- The history grid updates after the test
+- History can be selected and cleared
 
-## Phase 1D - Web API Endpoint
+## Future Work Outside MVP
 
-Completed:
+Future features may include:
 
-- Added `ConnectionTestsController`
-- Added `POST /api/connection-tests/mock`
-- Registered `IConnectionTestService`
-- Confirmed endpoint works from PowerShell
-
-## Phase 1E - WPF to API Flow
-
-Completed:
-
-- Added WPF API client
-- Added basic WPF test UI
-- WPF app calls API endpoint
-- WPF app displays returned `ConnectionTestResult`
-
-## Phase 1F - Documentation
-
-In progress:
-
-- Update README
-- Document current architecture
-- Document MVP scope
-- Document current workflows
-- Document security notes
-
-## Recommended Next Features
-
-1. Improve the WPF layout and result panel
-2. Add API base URL configuration
-3. Add connection profile model
-4. Add local profile storage
-5. Add real REST API test service
-6. Add SQL Server connection test service
-7. Add result history
-8. Add screenshots and usage examples
+- SQL Server connection testing
+- PostgreSQL connection testing
+- REST request headers
+- REST request body support
+- API authentication options
+- Result export
+- Better WPF styling
+- MVVM refactor
+- Database-backed storage
+- FastAPI testing
+- AWS testing
+- Encrypted secret storage
