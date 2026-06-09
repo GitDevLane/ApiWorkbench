@@ -15,6 +15,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IConnectionTestService, MockConnectionTestService>();
 builder.Services.AddScoped<IConnectionProfileValidator, ConnectionProfileValidator>();
+builder.Services.AddHttpClient<IRestApiConnectionTestService, RestApiConnectionTestService>();
 
 builder.Services.AddScoped<IConnectionProfileRepository>(_ =>
 {
