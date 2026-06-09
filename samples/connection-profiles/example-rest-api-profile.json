@@ -1,0 +1,7 @@
+﻿{
+  "name": "Example REST API",
+  "connectionType": "RestApi",
+  "target": "https://example.com",
+  "description": "Sample profile for testing a real HTTP GET request.",
+  "isActive": true
+}
