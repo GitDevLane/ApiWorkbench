@@ -112,3 +112,14 @@ Future versions may add:
 - Better WPF layout and MVVM refactor
 - FastAPI/AWS expansion
 - Encrypted local secret storage
+
+## REST Response Preview
+
+ApiWorkbench now shows basic REST GET response details, including:
+
+- HTTP status code
+- reason phrase
+- response content type
+- response body preview
+
+The response body preview is limited to avoid flooding the UI or history with very large API responses. This helps test public APIs and inspect returned HTML or JSON before using the endpoint in another project.

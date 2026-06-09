@@ -129,3 +129,16 @@ dotnet run --project .\src\ApiWorkbench.App\ApiWorkbench.App.csproj
 6. Add MVVM refactor.
 7. Add PostgreSQL support.
 8. Add FastAPI/AWS expansion.
+
+## REST Response Preview
+
+Phase 4E added REST response details to `ConnectionTestResult` and `ConnectionTestHistoryItem`.
+
+Current REST GET results can include:
+
+- `HttpStatusCode`
+- `ReasonPhrase`
+- `ResponseContentType`
+- `ResponseBodyPreview`
+
+The WPF app displays these fields in the result panel and history detail view.
