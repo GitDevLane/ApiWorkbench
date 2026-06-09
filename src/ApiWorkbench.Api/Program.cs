@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using ApiWorkbench.Core.Abstractions;
+using ApiWorkbench.Data.Repositories;
 using ApiWorkbench.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,18 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IConnectionTestService, MockConnectionTestService>();
 builder.Services.AddScoped<IConnectionProfileValidator, ConnectionProfileValidator>();
+
+builder.Services.AddScoped<IConnectionProfileRepository>(_ =>
+{
+    var configuredPath = builder.Configuration["ProfileStorage:FilePath"]
+        ?? "App_Data/profiles.json";
+
+    var filePath = Path.IsPathRooted(configuredPath)
+        ? configuredPath
+        : Path.Combine(AppContext.BaseDirectory, configuredPath);
+
+    return new JsonConnectionProfileRepository(filePath);
+});
 
 var app = builder.Build();
 
